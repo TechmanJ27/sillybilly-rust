@@ -1,0 +1,205 @@
+[
+  {
+    "name": "arson",
+    "description": "Burn stuff",
+    "optionDesc": "Partner in crime",
+    "selfResponse": "{user} plays with fire",
+    "bot": "Activating anti-burn protocol",
+    "responses": [
+      "{user} burns down {target}'s home",
+      "{user} sets {target} ablaze",
+      "{target} watches as {user} burns down their city"
+    ]
+  },
+  {
+    "name": "banish",
+    "description": "To the shadow realm you go",
+    "optionDesc": "They've been naughty",
+    "selfResponse": "OH GOD {user} IS BANISHING THEMSELVES TO THE SHADOW REALM??? NOOOOOOOO",
+    "bot": "Nice try. I dodge",
+    "responses": [
+      "OH GOD {user} IS BANISHING {target} TO THE SHADOW REALM?? SOMEONE STOP THEM!!!",
+      "{user} is now banishing {target} to the shadow realm, say goodbye!",
+      "{user} is BANISHING {target} to the shadow realm, {target} is cooked..."
+    ]
+  },
+  {
+    "name": "bark",
+    "description": "Embrace it",
+    "optionDesc": "Woof woof",
+    "selfResponse": "{user} got distracted chasing their own tail. What a silly billy",
+    "bot": "Woof",
+    "responses": [
+      "{target}, I have a message for you: \"bark bark bark bark bark bark bark bark\"\n{user} gave it to me :3",
+      "{user} barks ferociously at {target}",
+      "{target} tried to deliver a package, but {user}'s barking scared them away"
+    ]
+  },
+  {
+    "name": "basement",
+    "description": "It's dark down here",
+    "optionDesc": "Good luck",
+    "selfResponse": "{user} got lost in their own basement",
+    "bot": "Puny mortal, you thought you could trap ME!?",
+    "responses": [
+      "OH NO! {target} IS TRAPPED IN {user}'S BASEMENT!!!"
+    ]
+  },
+  {
+    "name": "cake",
+    "description": "Bake a cake for someone",
+    "optionDesc": "Mmmm, tasty",
+    "selfResponse": "{user} bakes a tasty cake for themself",
+    "bot": "You baked a cake for me!",
+    "responses": [
+      "{user} bakes a cake for {target}! What's the occasion?",
+      "Is is {target}'s birthday? Why else would {user} be making them such a wonderful cake!"
+    ]
+  },
+  {
+    "name": "cuddle",
+    "description": "Bathe the victim with an overwhelming warmth of lover",
+    "optionDesc": "Show them some love",
+    "selfResponse": "{user} is cuddling with a body pillow",
+    "bot": "You're- You're cuddling with me?! YIPPEEEE",
+    "responses": [
+      "{user} pulls {target} close and doesn't let go ♡",
+      "AWWWW, {user} and {target} are cuddling, how cute ♡",
+      "{user} didn't know {target} was so fluffy before cuddling them ^^"
+    ]
+  },
+  {
+    "name": "dance",
+    "description": "Cha-cha slide",
+    "optionDesc": "Your dancing partner",
+    "selfResponse": "{user} shows off their moves",
+    "bot": "I'll dance with you :3",
+    "responses": [
+      "{user} dances with {target}",
+      "{user} spins {target} right round"
+    ]
+  },
+  {
+    "name": "explode",
+    "description": "Make something or someone blow up",
+    "optionDesc": "Oh no",
+    "selfResponse": "{user} explodes!",
+    "bot": "Self-destruct sequence activated. Haha, just kidding!",
+    "responses": [
+      "{target} opens their mailbox to find...\nA pipe bomb from {user} 💥"
+    ]
+  },
+  {
+    "name": "growl",
+    "description": "The ultimate intimidation tactic",
+    "optionDesc": "Who are we scaring today?",
+    "selfResponse": "{user} must be angry at their inner demons or something, they're growling at themself",
+    "bot": "Don't growl at me!",
+    "responses": [
+      "{user} just growled at {target} to assert dominance",
+      "{user} went GRRRRRRRRRR at {target}, they seem pretty angry",
+      "{user} is slowly crawling towards {target} while growling like a wolf… scary"
+    ]
+  },
+  {
+    "name": "gun",
+    "description": "Execute your second amendment right",
+    "optionDesc": "/̵͇̿/̿̿̿̿ ̿̿",
+    "selfResponse": "{user} is secretly a gun. Don't tell anyone!",
+    "bot": "",
+    "responses": [
+      "{user} is exercising their second amendment right and turning {target} into a rifle",
+      "Who has two thumbs and just got turned into a gun? That's right, {target}!\nThx {user} ^^"
+    ]
+  },
+  {
+    "name": "howl",
+    "description": "Must be a full moon",
+    "optionDesc": "A former packmate",
+    "selfResponse": "{user}'s howling really loudly at the sky... they must really miss their pack mates",
+    "bot": "AWOOOOOO!!!!",
+    "responses": [
+      "☆{user} just went up to {target} and howled :3",
+      "{user} is howling at {target}... must be a full moon",
+      "{user}'s howling at {target} to stay off their territory!!"
+    ]
+  },
+  {
+    "name": "murder",
+    "description": "Obliterate your enemies",
+    "optionDesc": "The opps",
+    "selfResponse": "{user} dies!",
+    "bot": "I dodge",
+    "responses": [
+      "{user} pulls a knife on {target}",
+      "{user} snipes {target}. Nice shot!"
+    ]
+  },
+  {
+    "name": "nuzzle",
+    "description": "Nuzzle somebody",
+    "optionDesc": "They better be a femboy",
+    "selfResponse": "Wooahh, how did you do that?",
+    "bot": "I'm not a furry I swear",
+    "responses": [
+      "{user} is attempting to spread the furry agenda by nuzzling {target}~"
+    ]
+  },
+  {
+    "name": "paw",
+    "description": "I know what you are",
+    "optionDesc": "Feed me already",
+    "selfResponse": "{user} paws at their reflection 🐾",
+    "bot": "Woah there, don't be getting to excited",
+    "responses": [
+      "{user} paws at {target} 🐾. They must be hungry",
+      "Gimme five... or, well, four~"
+    ]
+  },
+  {
+    "name": "pie",
+    "description": "Pie someone in the face",
+    "optionDesc": "The humiliation!",
+    "selfResponse": "{user} makes themself a delicious pie",
+    "bot": "A pie? For me! YIPPEE",
+    "responses": [
+      "{user} pies {target}. Apple, tasty",
+      "{target} SURPRISE PIE!! Don't look at me, {user} told me to do it"
+    ]
+  },
+  {
+    "name": "rob",
+    "description": "Rob somebody,,, yeah",
+    "optionDesc": "The victim >:]",
+    "selfResponse": "You can't rob yourself, silly!",
+    "bot": "Joke's on you, I'm broke!",
+    "responses": [
+      "{user} bumps into {target} and pickpockets a measly 5 cents from their pocket"
+    ]
+  },
+  {
+    "name": "sacrifice",
+    "description": "Blood for the blood god",
+    "optionDesc": "Who's going on the sacrificial altar today?",
+    "selfResponse": "{user} sacrifices themselves... What a hero 🫡",
+    "bot": "What did I ever do to you?",
+    "responses": [
+      "{user} sacrifices one of {target}'s lambs",
+      "{user} sacrifices two of {target}'s lambs",
+      "{user} sacrifices two of {target}'s limbs",
+      "{user} sacrifices half of {target}'s limbs :O",
+      "{user} tries to sacrifice {target}, but the gods reject them 😔\nNot a good look",
+      "{target} is brought up to the 🗡️Sacrificial Altar🗡️ by {user}"
+    ]
+  },
+  {
+    "name": "scream",
+    "description": "I have no mouth...",
+    "optionDesc": "...and I must scream",
+    "selfResponse": "{user} screams into a pillow",
+    "bot": "Oh, ok, I'll go hide in my corner again",
+    "responses": [
+      "{user} attempts to intimidate {target}! "
+    ]
+  }
+]
