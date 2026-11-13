@@ -49,12 +49,12 @@ async fn cat(
         .header(cat_key_header, cat_key)
         .await?;
     if !is_success(resp.status) {
-        print!(format!("HTTP error! Status: {}", resp.status));
+        print!("HTTP error! Status: {}", resp.status);
         ctx.send(poise::CreateReply::default().content("Could not fetch a cat right now.")).await?;
         Ok(())
     }
 
-    let data = resp.json::<CatResponse[]>().await?;
+    let data = resp.json::<CatResponse>[]().await?;
 
     if ctx.CommandInteraction.Permissions.embed_links() {
         let cat_embed = serenity::CreateEmbed::default()
