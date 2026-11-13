@@ -23,6 +23,24 @@ struct CommandData {
     responses: Vec<String>,
 }
 
+// Send a cat
+#[poise::command(
+    slash_command,
+    install_context = "Guild|User",
+    interaction_context = "Guild|BotDm|PrivateChannel"
+)] async fn cat_art(
+    ctx: Context<'_>,
+) -> Result<(), Error> {
+    ctx.send(
+        poise::CreateReply::default()
+            .content("_  _╱|、\n
+            (˚ˎ 。7\n
+            |、˜〵\n
+            じしˍ,)ノ")
+    ).await?;
+    Ok(())
+}
+
 /// Who am I?
 #[poise::command(
     slash_command,
