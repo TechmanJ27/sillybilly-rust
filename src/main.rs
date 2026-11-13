@@ -33,10 +33,11 @@ async fn cat(
     ctx: Context<'_>,
 ) -> Result<(), Error> {
     let client = reqwest::Client::new();
-
+let cat_key_header = HeaderName::from_static("x-api-key");
+let cat_key = std::env::var("CAT_API_KEY").expect("missing CAT_API_KEY");
 let resp = client
     .get("https://beta-api.thecatapi.com/v1/images/search")
-    .header(USER_AGENT, "My Rust Program 1.0")
+    .header(hdr,cat_key )
     .await?
     .text()
     .await?;
