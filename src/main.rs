@@ -33,14 +33,18 @@ async fn cat(
     ctx: Context<'_>,
 ) -> Result<(), Error> {
     let client = reqwest::Client::new();
-let cat_key_header = HeaderName::from_static("x-api-key");
-let cat_key = std::env::var("CAT_API_KEY").expect("missing CAT_API_KEY");
-let resp = client
-    .get("https://beta-api.thecatapi.com/v1/images/search")
-    .header(hdr,cat_key )
-    .await?
-    .text()
-    .await?;
+    let cat_key_header = HeaderName::from_static("x-api-key");
+    let cat_key = std::env::var("CAT_API_KEY").expect("missing CAT_API_KEY");
+    let resp = client
+        .get("https://beta-api.thecatapi.com/v1/images/search")
+        .header(cat_key_header, cat_key)
+        .await?
+    if !is_success(resp.status) {
+        print!(format!("HTTP error! Status: {}", resp.status));
+        ctx.send(poise::CreateReply::default().content("Could not fetch a cat right now."));
+        Ok(())
+    }
+    
     Ok(())
 }
 
