@@ -3,6 +3,7 @@ use rand::seq::IndexedRandom;
 use rand::RngExt;
 use serde::Deserialize;
 use std::{borrow::Cow, collections::HashMap, fs::File, io::BufReader};
+use reqwest::header::USER_AGENT;
 
 struct Data {
     bot_id: serenity::UserId,
@@ -23,19 +24,32 @@ struct CommandData {
     responses: Vec<String>,
 }
 
-let resp = reqwest::get("https://httpbin.org/ip")
-        .await?
-        .text()
-        .await?;
-    println!("{:#?}", resp);
+#[poise::command(
+    slash_command,
+    install_context = "Guild|User",
+    interaction_context = "Guild|BotDm|PrivateChannel"
+)]
+async fn cat(
+    ctx: Context<'_>,
+) -> Result<(), Error> {
+    let client = reqwest::Client::new();
+
+let resp = client
+    .get("https://beta-api.thecatapi.com/v1/images/search")
+    .header(USER_AGENT, "My Rust Program 1.0")
+    .await?
+    .text()
+    .await?;
     Ok(())
+}
 
 // Send a cat
 #[poise::command(
     slash_command,
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"
-)] async fn cat_art(
+)]
+async fn cat_art(
     ctx: Context<'_>,
 ) -> Result<(), Error> {
     ctx.send(
