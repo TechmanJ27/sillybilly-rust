@@ -23,6 +23,13 @@ struct CommandData {
     responses: Vec<String>,
 }
 
+let resp = reqwest::get("https://httpbin.org/ip")
+        .await?
+        .text()
+        .await?;
+    println!("{:#?}", resp);
+    Ok(())
+
 // Send a cat
 #[poise::command(
     slash_command,
