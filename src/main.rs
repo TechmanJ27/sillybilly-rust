@@ -8,6 +8,7 @@ use rand::seq::IndexedRandom;
 use rand::RngExt;
 use serde::Deserialize;
 use std::{borrow::Cow, collections::HashMap, fs::File, io::BufReader};
+use reqwest::header::USER_AGENT;
 
 struct Data {
     bot_id: serenity::UserId,
@@ -26,6 +27,70 @@ struct CommandData {
     self_response: String,
     bot: String,
     responses: Vec<String>,
+}
+
+#[derive(Deserialize)]
+struct CatResponse {
+    id: String,
+    url: String,
+    width: u32,
+    height: u32,
+}
+
+// Get a random cat image
+#[poise::command(
+    slash_command,
+    install_context = "Guild|User",
+    interaction_context = "Guild|BotDm|PrivateChannel"
+)]
+async fn cat(
+    ctx: Context<'_>,
+) -> Result<(), Error> {
+    let client = reqwest::Client::new();
+    let cat_key_header = HeaderName::from_static("x-api-key");
+    let cat_key = std::env::var("CAT_API_KEY").expect("missing CAT_API_KEY");
+    let resp = client
+        .get("https://beta-api.thecatapi.com/v1/images/search")
+        .header(cat_key_header, cat_key)
+        .await?;
+    if !is_success(resp.status) {
+        print!("HTTP error! Status: {}", resp.status);
+        ctx.send(poise::CreateReply::default().content("Could not fetch a cat right now.")).await?;
+        Ok(())
+    }
+
+    let data = resp.json::<CatResponse>[]().await?;
+
+    if ctx.CommandInteraction.Permissions.embed_links() {
+        let cat_embed = serenity::CreateEmbed::default()
+            .image(data[0].url)
+            .color("#4EBDED")
+            .footer("Powered by thecatapi.com");
+        ctx.send(poise::CreateReply::default().embed(cat_embed)).await?;
+    } else {
+       ctx.send(poise::CreateReply::default().content(data[0].url)).await?;
+    }
+    
+    Ok(())
+}
+
+// Send a cat
+#[poise::command(
+    slash_command,
+    install_context = "Guild|User",
+    interaction_context = "Guild|BotDm|PrivateChannel"
+)]
+async fn cat_art(
+    ctx: Context<'_>,
+) -> Result<(), Error> {
+    ctx.send(
+        poise::CreateReply::default()
+            .content("_  _╱|、\n
+            (˚ˎ 。7\n
+            |、˜〵\n
+            じしˍ,)ノ")
+    ).await?;
+    Ok(())
 }
 
 /// Who am I?
