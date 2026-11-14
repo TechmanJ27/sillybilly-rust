@@ -1,4 +1,9 @@
-use poise::serenity_prelude::{self as serenity};
+use poise::{ChoiceParameter, serenity_prelude::{
+    self as serenity, 
+    CreateInteractionResponse, 
+    CreateInteractionResponseMessage, 
+    InteractionResponseFlags,
+}};
 use rand::seq::IndexedRandom;
 use rand::RngExt;
 use serde::Deserialize;
@@ -41,8 +46,102 @@ struct CommandData {
     ctx.send(
         poise::CreateReply::default()
             .embed(about_me_embed)
-            .reply(true)
     ).await?;
+    Ok(())
+}
+
+#[derive(Debug, Clone, Copy, poise::ChoiceParameter)]
+pub enum Fruit {
+    #[name = "avocado"]
+    Avocado,
+    #[name = "lemon"]
+    Lemon,
+    #[name = "tomato"]
+    Tomato,
+    #[name = "apple"]
+    Apple,
+    #[name = "banana"]
+    Banana,
+    #[name = "orange"]
+    Orange,
+    #[name = "grape"]
+    Grape,
+    #[name = "strawberry"]
+    Strawberry,
+    #[name = "watermelon"]
+    Watermelon,
+    #[name = "pineapple"]
+    Pineapple,
+    #[name = "cherry"]
+    Cherry,
+    #[name = "peach"]
+    Peach,
+    #[name = "pear"]
+    Pear,
+    #[name = "mango"]
+    Mango,
+    #[name = "kiwi"]
+    Kiwi,
+    #[name = "blueberry"]
+    Blueberry,
+    #[name = "coconut"]
+    Coconut,
+    #[name = "melon"]
+    Melon,
+    #[name = "green apple"]
+    GreenApple,
+    #[name = "olive"]
+    Olive,
+}
+
+impl Fruit {
+    pub fn emoji(&self) -> &'static str {
+        match self {
+            Fruit::Avocado => "🥑",
+            Fruit::Lemon => "🍋",
+            Fruit::Tomato => "🍅",
+            Fruit::Apple => "🍎",
+            Fruit::Banana => "🍌",
+            Fruit::Orange => "🍊",
+            Fruit::Grape => "🍇",
+            Fruit::Strawberry => "🍓",
+            Fruit::Watermelon => "🍉",
+            Fruit::Pineapple => "🍍",
+            Fruit::Cherry => "🍒",
+            Fruit::Peach => "🍑",
+            Fruit::Pear => "🍐",
+            Fruit::Mango => "🥭",
+            Fruit::Kiwi => "🥝",
+            Fruit::Blueberry => "🫐",
+            Fruit::Coconut => "🥥",
+            Fruit::Melon => "🍈",
+            Fruit::GreenApple => "🍏",
+            Fruit::Olive => "🫒",
+        }
+    }
+    
+}
+
+// Fruit somebody
+#[poise::command(
+    slash_command,
+    install_context = "Guild|User",
+    interaction_context = "Guild|BotDm|PrivateChannel"
+)] async fn fruit(
+    ctx: poise::ApplicationContext<'_, Data, Error>,
+    #[description = "The fruit to fruit somebody with"]
+    fruit: Fruit,
+) -> Result<(), Error> {
+    ctx.send(
+        poise::CreateReply::default()
+            .content(format!("${} casts ${}!", ctx.author(), fruit.name()))
+    )
+    .await?;
+    ctx.send(
+        poise::CreateReply::default()
+            .content(format!("# {}", fruit.emoji()))
+    )
+    .await?;
     Ok(())
 }
 
@@ -63,24 +162,32 @@ fn footer(result: u32, sides: u32) -> Cow<'static, str> {
     }
 }
 
+// Roll a die - Or, flip a coin
 #[poise::command(
     slash_command,
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
 async fn roll(
-    ctx: Context<'_>,
-    #[description = "How many sides should the dice have?"]
+    ctx: poise::ApplicationContext<'_, Data, Error>,
+    #[description = "How many sides should the die have?"]
     #[min = 2]
     sides: u32,
 ) -> Result<(), Error> {
     let result = rand::rng().random_range(1..=sides);
-    let message = format!("You rolled a {}!{}", result, footer(result, sides));
+    let mut message = format!("You rolled a {}!{}", result, footer(result, sides));
+
+    if sides == 2 {
+      message = match result{
+        1=>"Heads\n-# Coinflip".to_string(),
+        2=>"Tails\n-# Coinflip".to_string(),
+        _=>message,
+      }
+    }
 
     ctx.send(
         poise::CreateReply::default()
             .content(message)
-            .reply(true),
     )
     .await?;
     Ok(())
@@ -99,7 +206,7 @@ fn parse_response(template: &str, target_id: serenity::UserId, user_id: serenity
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel")
 ] async fn action(
-    ctx: Context<'_>,
+    ctx: poise::ApplicationContext<'_, Data, Error>,
     #[description = "placeholder"] user: serenity::User,
 ) -> Result<(), Error> {
     let data = ctx
@@ -126,10 +233,13 @@ fn parse_response(template: &str, target_id: serenity::UserId, user_id: serenity
         random()
     };
 
-    ctx.send(
-        poise::CreateReply::default()
-            .content(parse_response(template, target_id, author_id))
-    ).await?;
+    let data = CreateInteractionResponseMessage::new()
+        .content(parse_response(template, target_id, author_id))
+        .flags(InteractionResponseFlags::SUPPRESS_NOTIFICATIONS);
+
+    let builder = CreateInteractionResponse::Message(data);
+    ctx.interaction.create_response(ctx, builder).await?;
+
     Ok(())
 }
 
