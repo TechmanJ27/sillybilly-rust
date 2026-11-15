@@ -1,16 +1,16 @@
-use poise::{ChoiceParameter, serenity_prelude::{
-    self as serenity, 
-    CreateInteractionResponse, 
-    CreateInteractionResponseMessage, 
-    InteractionResponseFlags,
+mod fun;
+mod utility;
+
+use poise::{serenity_prelude::{
+    self as serenity, Color, CreateInteractionResponse, CreateInteractionResponseMessage, InteractionResponseFlags
 }};
 use rand::seq::IndexedRandom;
-use rand::RngExt;
+
 use serde::Deserialize;
 use std::{borrow::Cow, collections::HashMap, fs::File, io::BufReader};
-use reqwest::header::USER_AGENT;
+use reqwest;
 
-struct Data {
+pub struct Data {
     bot_id: serenity::UserId,
     actions: HashMap<String, CommandData>,
 }
@@ -31,232 +31,52 @@ struct CommandData {
 
 #[derive(Deserialize)]
 struct CatResponse {
-    id: String,
     url: String,
-    width: u32,
-    height: u32,
 }
 
 // Get a random cat image
 #[poise::command(
     slash_command,
     install_context = "Guild|User",
-    interaction_context = "Guild|BotDm|PrivateChannel"
+    interaction_context = "Guild|BotDm|PrivateChannel",
+    required_permissions = "EMBED_LINKS"
 )]
-async fn cat(
-    ctx: Context<'_>,
-) -> Result<(), Error> {
+async fn cat(ctx: Context<'_>) -> Result<(), Error> {
     let client = reqwest::Client::new();
-    let cat_key_header = HeaderName::from_static("x-api-key");
     let cat_key = std::env::var("CAT_API_KEY").expect("missing CAT_API_KEY");
+
     let resp = client
-        .get("https://beta-api.thecatapi.com/v1/images/search")
-        .header(cat_key_header, cat_key)
+        .get("https://api.thecatapi.com/v1/images/search")
+        .header("x-api-key", cat_key)
+        .send()
         .await?;
-    if !is_success(resp.status) {
-        print!("HTTP error! Status: {}", resp.status);
-        ctx.send(poise::CreateReply::default().content("Could not fetch a cat right now.")).await?;
-        Ok(())
+
+    if !resp.status().is_success() {
+        eprintln!("HTTP error! Status: {}", resp.status());
+        ctx.send(poise::CreateReply::default().content("Could not fetch a cat right now."))
+            .await?;
+        return Ok(());
     }
 
-    let data = resp.json::<CatResponse>[]().await?;
+    let cats: Vec<CatResponse> = resp.json().await?;
 
-    if ctx.CommandInteraction.Permissions.embed_links() {
+    if let Some(cat) = cats.first() {
+        let cat_embed_footer = serenity::CreateEmbedFooter::new("Powered by thecatapi.com");
         let cat_embed = serenity::CreateEmbed::default()
-            .image(data[0].url)
-            .color("#4EBDED")
-            .footer("Powered by thecatapi.com");
-        ctx.send(poise::CreateReply::default().embed(cat_embed)).await?;
+            .image(&cat.url)
+            .color(Color::new(5160429))
+            .footer(cat_embed_footer);
+
+        ctx.send(poise::CreateReply::default().embed(cat_embed))
+            .await?;
     } else {
-       ctx.send(poise::CreateReply::default().content(data[0].url)).await?;
-    }
-    
-    Ok(())
-}
-
-// Send a cat
-#[poise::command(
-    slash_command,
-    install_context = "Guild|User",
-    interaction_context = "Guild|BotDm|PrivateChannel"
-)]
-async fn cat_art(
-    ctx: Context<'_>,
-) -> Result<(), Error> {
-    ctx.send(
-        poise::CreateReply::default()
-            .content("_  _╱|、\n
-            (˚ˎ 。7\n
-            |、˜〵\n
-            じしˍ,)ノ")
-    ).await?;
-    Ok(())
-}
-
-/// Who am I?
-#[poise::command(
-    slash_command,
-    install_context = "Guild|User",
-    interaction_context = "Guild|BotDm|PrivateChannel")
-] async fn about(
-    ctx: Context<'_>,
-) -> Result<(), Error> {
-    let about_me_embed = serenity::CreateEmbed::default()
-        .title("About Me")
-        .description("Hey~\nI\'m Sillybilly, a fun roleplay/action bot developed solely by MikuBerry (@techmanj27)\n
-        Originally created for users in the UES server and inspired by Goober Bot, people all across the platform have begun using me!\n
-        In addition to rp commands, I also have some fun and useful features :3")
-        .color(0x4EBDED);
-
-    ctx.send(
-        poise::CreateReply::default()
-            .embed(about_me_embed)
-    ).await?;
-    Ok(())
-}
-
-#[derive(Debug, Clone, Copy, poise::ChoiceParameter)]
-pub enum Fruit {
-    #[name = "avocado"]
-    Avocado,
-    #[name = "lemon"]
-    Lemon,
-    #[name = "tomato"]
-    Tomato,
-    #[name = "apple"]
-    Apple,
-    #[name = "banana"]
-    Banana,
-    #[name = "orange"]
-    Orange,
-    #[name = "grape"]
-    Grape,
-    #[name = "strawberry"]
-    Strawberry,
-    #[name = "watermelon"]
-    Watermelon,
-    #[name = "pineapple"]
-    Pineapple,
-    #[name = "cherry"]
-    Cherry,
-    #[name = "peach"]
-    Peach,
-    #[name = "pear"]
-    Pear,
-    #[name = "mango"]
-    Mango,
-    #[name = "kiwi"]
-    Kiwi,
-    #[name = "blueberry"]
-    Blueberry,
-    #[name = "coconut"]
-    Coconut,
-    #[name = "melon"]
-    Melon,
-    #[name = "green apple"]
-    GreenApple,
-    #[name = "olive"]
-    Olive,
-}
-
-impl Fruit {
-    pub fn emoji(&self) -> &'static str {
-        match self {
-            Fruit::Avocado => "🥑",
-            Fruit::Lemon => "🍋",
-            Fruit::Tomato => "🍅",
-            Fruit::Apple => "🍎",
-            Fruit::Banana => "🍌",
-            Fruit::Orange => "🍊",
-            Fruit::Grape => "🍇",
-            Fruit::Strawberry => "🍓",
-            Fruit::Watermelon => "🍉",
-            Fruit::Pineapple => "🍍",
-            Fruit::Cherry => "🍒",
-            Fruit::Peach => "🍑",
-            Fruit::Pear => "🍐",
-            Fruit::Mango => "🥭",
-            Fruit::Kiwi => "🥝",
-            Fruit::Blueberry => "🫐",
-            Fruit::Coconut => "🥥",
-            Fruit::Melon => "🍈",
-            Fruit::GreenApple => "🍏",
-            Fruit::Olive => "🫒",
-        }
-    }
-    
-}
-
-// Fruit somebody
-#[poise::command(
-    slash_command,
-    install_context = "Guild|User",
-    interaction_context = "Guild|BotDm|PrivateChannel"
-)] async fn fruit(
-    ctx: poise::ApplicationContext<'_, Data, Error>,
-    #[description = "The fruit to fruit somebody with"]
-    fruit: Fruit,
-) -> Result<(), Error> {
-    ctx.send(
-        poise::CreateReply::default()
-            .content(format!("${} casts ${}!", ctx.author(), fruit.name()))
-    )
-    .await?;
-    ctx.send(
-        poise::CreateReply::default()
-            .content(format!("# {}", fruit.emoji()))
-    )
-    .await?;
-    Ok(())
-}
-
-fn footer(result: u32, sides: u32) -> Cow<'static, str> {
-    match sides {
-        4 => Cow::Borrowed("\n-# d4"),
-        6 => Cow::Borrowed("\n-# d6"),
-        8 => Cow::Borrowed("\n-# d8"),
-        10 => Cow::Borrowed("\n-# d10"),
-        12 => Cow::Borrowed("\n-# d12"),
-        20 => match result {
-            1 => Cow::Borrowed(" - Nat1\n-# d20"),
-            20 => Cow::Borrowed(" - Nat20\n-# d20"),
-            _ => Cow::Borrowed("\n-# d20"),
-        },
-        100 => Cow::Borrowed("\n-# d100"),
-        _ => Cow::Owned(format!("\n-# {}-sided die", sides)),
-    }
-}
-
-// Roll a die - Or, flip a coin
-#[poise::command(
-    slash_command,
-    install_context = "Guild|User",
-    interaction_context = "Guild|BotDm|PrivateChannel"
-)]
-async fn roll(
-    ctx: poise::ApplicationContext<'_, Data, Error>,
-    #[description = "How many sides should the die have?"]
-    #[min = 2]
-    sides: u32,
-) -> Result<(), Error> {
-    let result = rand::rng().random_range(1..=sides);
-    let mut message = format!("You rolled a {}!{}", result, footer(result, sides));
-
-    if sides == 2 {
-      message = match result{
-        1=>"Heads\n-# Coinflip".to_string(),
-        2=>"Tails\n-# Coinflip".to_string(),
-        _=>message,
-      }
+        ctx.send(poise::CreateReply::default().content("No cat image was returned."))
+            .await?;
     }
 
-    ctx.send(
-        poise::CreateReply::default()
-            .content(message)
-    )
-    .await?;
     Ok(())
 }
+
 
 fn parse_response(template: &str, target_id: serenity::UserId, user_id: serenity::UserId) -> String {
     template
@@ -333,8 +153,10 @@ async fn main() {
     let actions: HashMap<String, CommandData> =
         raw.into_iter().map(|c| (c.name.clone(), c)).collect();
 
-    commands.push(about());
-    commands.push(roll());
+    commands.push(utility::about());
+    commands.push(fun::roll());
+    commands.push(cat());
+    commands.push(fun::fruit());
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
