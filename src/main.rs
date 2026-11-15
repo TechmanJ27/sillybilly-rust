@@ -157,6 +157,7 @@ async fn main() {
     commands.push(fun::roll());
     commands.push(cat());
     commands.push(fun::fruit());
+    commands.push(fun::eight_ball());
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {

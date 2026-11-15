@@ -118,6 +118,27 @@ fn footer(result: u32, sides: u32) -> Cow<'static, str> {
     }
 }
 
+// Send the magical all-seeing orb a strange query
+#[poise::command(
+    slash_command,
+    install_context = "Guild|User",
+    interaction_context = "Guild|BotDm|PrivateChannel"
+)]
+pub async fn eight_ball(
+    ctx: poise::ApplicationContext<'_, Data, Error>,
+    #[description = "question"] question: String,
+) -> Result<(), Error> {
+    let answers =vec!["Yes", "No", "Perhaps", "Unclear", "Come back later :3", "Maybe~", "No shot"];
+    let answer = answers[rand::rng().random_range(0..answers.len())];
+
+    ctx.send(
+        poise::CreateReply::default()
+            .content(format!("> {}\n{}", question, answer))
+    )
+    .await?;
+    Ok(())
+}
+
 // Roll a die - Or, flip a coin
 #[poise::command(
     slash_command,
