@@ -18,7 +18,7 @@ impl MarkovEntry {
     }
 }
 
-let global_weights = HashMap::new()<string, HashMap<string, MarkovEntry>>();
+let mut global_weights = HashMap<string, HashMap<string, MarkovEntry>>::new();
 
 pub async fn fetch_in_channel(
   channel_id: String,
