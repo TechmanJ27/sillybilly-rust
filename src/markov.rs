@@ -9,7 +9,7 @@ use std::cmp::min;
 // export const globalWeights = new Collection<string, Collection<string, MarkovEntry>>();
 
 pub fn async fetch_in_channel(
-  channel:
+  channel_id:
   author_id: String,
   maxMessagesToScan: i32,
   mut collected: Vec<String>,
@@ -19,8 +19,20 @@ pub fn async fetch_in_channel(
   let mut scanned = 0;
   while scanned < maxMessagesToScan && collected.len() < maxTotalMessages {
     let limit = min(100, maxMessagesToScan - scanned);
-    let builder = GetMessages::new().after(MessageId::new(158339864557912064)).limit(25);
+    let builder = GetMessages::new().before(MessageId::new(before)).limit(limit);
     let batch = channel_id.messages(&http, builder).await?;
+    if batch.len() === 0 { break; }
+    for const message in batch {
+      if collected.len() >= maxTotalMessages break;
+
+      if message.author.id === author_id && message.content {
+        collected.push(message.content);  
+      }
+    }
+    scanned += batch.size;
+    before = batch.lastKey();
+
+    if (!before || batch.size < limit) break;
   }
 }
             
