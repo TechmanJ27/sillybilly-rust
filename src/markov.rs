@@ -1,75 +1,62 @@
 // import { Collection, GuildMember, PermissionFlagsBits, type GuildTextBasedChannel} from "discord.js";
 use poise::{serenity_prelude::{
   self as serenity, Member, builder::GetMessages, model::id::{ChannelId, MessageId}
-}
+}};
 use std::cmp::min;
+use std::collections::HashMap;
+use time;
 
-// export type MarkovEntry = {dateTime: number; weights: Map<string, string[]>; };
+#[derive(Hash, Eq, PartialEq, Debug)]
+struct MarkovEntry {
+    date_time: i32; 
+    weights: HashMap<string, Vec<String>>;
+}
 
-// export const globalWeights = new Collection<string, Collection<string, MarkovEntry>>();
+impl MarkovEntry {
+    fn new(weights: HashMap<string, Vec<String>>) -> MarkovEntry {
+        MarkovEntry { date_time: time::Timestamp::now().as_seconds(), weights: weights }
+    }
+}
 
-pub fn async fetch_in_channel(
-  channel_id:
+let global_weights = HashMap::new()<string, HashMap<string, MarkovEntry>>();
+
+pub async fn fetch_in_channel(
+  channel_id: String,
   author_id: String,
-  maxMessagesToScan: i32,
+  max_messages_to_scan: i32,
   mut collected: Vec<String>,
-  maxTotalMessages: i32,
-) {
+  max_total_messages: i32,
+) -> Result<Vec<String>, Error> {
   let mut before: String;
   let mut scanned = 0;
-  while scanned < maxMessagesToScan && collected.len() < maxTotalMessages {
-    let limit = min(100, maxMessagesToScan - scanned);
+  while scanned < max_messages_to_scan && collected.len() < max_total_messages as usize {
+    let limit = min(100, max_messages_to_scan - scanned);
     let builder = GetMessages::new().before(MessageId::new(before)).limit(limit);
     let batch = channel_id.messages(&http, builder).await?;
-    if batch.len() === 0 { break; }
-    for const message in batch {
-      if collected.len() >= maxTotalMessages break;
+    if batch.len() == 0 { break; }
+    for message in batch {
+      if collected.len() >= max_total_messages as usize { break; }
 
-      if message.author.id === author_id && message.content {
+      if message.author.id == author_id && message.content {
         collected.push(message.content);  
       }
     }
     scanned = scanned + batch.len();
     before = batch.last();
 
-    if !before || batch.len() < limit break;
+    if before.len() == 0 || batch.len() < limit { break; }
   }
   collected
 }
-            
-// async function fetchInChannel(
-//     channel: GuildTextBasedChannel,
-//     authorId: string,
-//     maxMessagesToScan: number,
-//     collected: string[],
-//     maxTotalMessages: number,
-// ): Promise<void> {
-//     let before: string | undefined;
-//     let scanned = 0;
 
-//     while (scanned < maxMessagesToScan && collected.length < maxTotalMessages) {
-//         const limit = Math.min(100, maxMessagesToScan - scanned);
-//         const batch = await channel.messages.fetch({
-//             limit,
-//             ...(before ? { before } : {}),
-//         });
-
-//         if (batch.size === 0) break;
-
-//         for (const message of batch.values()) {
-//             if (collected.length >= maxTotalMessages) break;
-
-//             if (message.author.id === authorId && message.content) {
-//                 collected.push(message.content);
-//             }
-//         }
-
-//         scanned += batch.size;
-//         before = batch.lastKey();
-
-//         if (!before || batch.size < limit) break;
-//     }
-// }
+pub async fn index_messages(
+    user: Member,
+    max_messages_per_channel: i32,
+    max_total_messages: i32,
+    concurrency: i32,
+) {
+global_weights
+}
 
 // export async function indexMessages(
 //     user: GuildMember,
