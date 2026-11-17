@@ -29,11 +29,12 @@ pub fn async fetch_in_channel(
         collected.push(message.content);  
       }
     }
-    scanned += batch.size;
-    before = batch.lastKey();
+    scanned = scanned + batch.len();
+    before = batch.last();
 
-    if (!before || batch.size < limit) break;
+    if !before || batch.len() < limit break;
   }
+  collected
 }
             
 // async function fetchInChannel(
