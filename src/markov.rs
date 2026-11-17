@@ -7,18 +7,20 @@ use std::collections::HashMap;
 use time;
 
 #[derive(Hash, Eq, PartialEq, Debug)]
-struct MarkovEntry {
-    date_time: i32; 
-    weights: HashMap<string, Vec<String>>;
+struct UserEntry {
+    date_time: i32,
+    weights: HashMap<String, Vec<String>>
 }
 
-impl MarkovEntry {
-    fn new(weights: HashMap<string, Vec<String>>) -> MarkovEntry {
-        MarkovEntry { date_time: time::Timestamp::now().as_seconds(), weights: weights }
+impl UserEntry {
+    fn new(weights: HashMap<String, Vec<String>>) -> UserEntry {
+        UserEntry { date_time: time::Timestamp::now().as_seconds(), weights: weights }
     }
 }
 
-let mut global_weights = HashMap<string, HashMap<string, MarkovEntry>>::new();
+type GuildEntry = HashMap<String, UserEntry>;
+
+const global_weights: HashMap<String, GuildEntry> = HashMap::new();
 
 pub async fn fetch_in_channel(
   channel_id: String,
@@ -54,8 +56,16 @@ pub async fn index_messages(
     max_messages_per_channel: i32,
     max_total_messages: i32,
     concurrency: i32,
-) {
-global_weights
+) -> Result<Vec<String>> {
+    const me = user.guild.members.me;
+    if !me return [];
+
+    const needed_bot_perms = Vec![
+        VIEW_CHANNEL,
+        READ_MESSAGE_HISTORY,
+    ];
+
+    const readable_channels = user.guild_id.channels();
 }
 
 // export async function indexMessages(
