@@ -6,9 +6,10 @@
 // const __dirname = path.dirname(__filename);
 
 // export const disabledPath = path.join(__dirname, "", "..", "data", "disabled.json");
-static FILE: LazyLock<File> = LazyLock::new(||{File::open("./actionCommands.json").expect("Could not open actionCommands.json");});
+static FILE:
 
 pub fn fetch_cache_json() {
+    let file = File::open("./actionCommands.json").expect("Could not open actionCommands.json");
     serde_json::from_reader(BufReader::new(FILE))
         .expect("Error while reading or parsing actionCommands.json");
 }
